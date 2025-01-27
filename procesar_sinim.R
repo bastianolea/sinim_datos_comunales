@@ -28,21 +28,22 @@ datos_sinim <- map(archivos, ~{
     row_to_names(2) |> 
     clean_names() |> 
     select(-municipio) |> 
-    pivot_longer(cols = starts_with("x"), names_to = "año", values_to = "valor") |> 
+    pivot_longer(cols = starts_with("x"), names_to = "año", values_to = "variable") |> 
     mutate(año = str_remove(año, "x"),
-           valor = as.numeric(valor))
+           variable = as.numeric(variable))
   
   # rellenar datos faltantes con años anteriores
   archivo_2 <- archivo_1 |> 
-    fill(valor, .direction = "updown") |> 
+    fill(variable, .direction = "updown") |> 
     group_by(codigo) |> 
     slice_max(año) |> 
     ungroup()
   
-  # agregar nombres de comunas
+  # agregar nombres de comunas y variables
   archivo_3 <- archivo_2 |> 
-    left_join(cut_comunas, by = c("codigo" = "cut_comuna")) |> 
-    mutate(variable = nombre_variable)
+    mutate(nombre_variable) |> 
+    rename(cut_comuna = codigo) |> 
+    left_join(cut_comunas, by = "cut_comuna")
   
   return(archivo_3)
 })
@@ -50,7 +51,7 @@ datos_sinim <- map(archivos, ~{
 
 # volver a obtener nombres de variables
 variables_lista <- datos_sinim |> 
-  map(~select(.x, variable) |> pull() |> unique()) |> 
+  map(~select(.x, nombre_variable) |> pull() |> unique()) |> 
   unlist()
 
 # nombrar la lista
@@ -58,5 +59,23 @@ names(datos_sinim) <- variables_lista
 
 datos_sinim
 
-# guardar
+# correciones ----
+datos_sinim |> names()
+
+# datos que vienen en porcentaje, pasar a proporción
+# [16] "IADM02 (%) Participación de Ingresos Propios Permanentes (IPP) en el Ingreso Total"                                                                                                                      
+# [17] "IADM75 (%) Dependencia del Fondo Común Municipal sobre los Ingresos Propios" 
+
+datos_sinim[["IADM02 (%) Participación de Ingresos Propios Permanentes (IPP) en el Ingreso Total"]] <- datos_sinim[["IADM02 (%) Participación de Ingresos Propios Permanentes (IPP) en el Ingreso Total"]] |> 
+  mutate(variable = variable/100)
+
+datos_sinim[["IADM75 (%) Dependencia del Fondo Común Municipal sobre los Ingresos Propios"]] <- datos_sinim[["IADM75 (%) Dependencia del Fondo Común Municipal sobre los Ingresos Propios"]] |> 
+  mutate(variable = variable/100)
+
+datos_sinim[["RSHPORH40i (%) Porcentaje de Hogares de 0-40% de Ingresos respecto del Total Regional (RSH)"]] <- datos_sinim[["RSHPORH40i (%) Porcentaje de Hogares de 0-40% de Ingresos respecto del Total Regional (RSH)"]] |> 
+  mutate(variable = variable/100)
+
+
+
+# guardar ----
 saveRDS(datos_sinim, "datos_sinim.rds", compress = F)
