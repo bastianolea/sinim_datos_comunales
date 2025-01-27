@@ -32,14 +32,42 @@ datos_sinim <- sinim_obtener_datos(
 
 datos_sinim
 
+# revisar variables
 datos_sinim |> 
   distinct(variable, area, subarea)
 
+# revisiar municipios
 datos_sinim |> 
-  distinct(municipio)
+  distinct(municipio, municipio_name)
 
+datos_sinim |> distinct(unit)  
 
+# agregar códigos únicos territoriales
+datos_sinim_2 <- datos_sinim |> 
+  left_join(municipios |> select(id_municipio, cut_comuna = idLegal),
+            by = join_by(municipio == id_municipio))
+
+# limpieza
+datos_sinim_3 <- datos_sinim_2 |> 
+  # sacar columnas irrelevantes
+  select(-class_type, -col_info) |> 
+  # reordenar columnas de municipio
+  select(-municipio) |> 
+  rename(municipio = municipio_name) |> 
+  relocate(municipio, cut_comuna, contains("year"), .before = var_code) |> 
+  # limpiar variables
+  mutate(unit = str_trim(unit)) |> 
+  # convertir cifras a numérico
+  mutate(value = parse_number(value, locale = locale(decimal_mark = ",", grouping_mark = ".")))
+
+# renombrar
+datos_sinim_4 <- datos_sinim_3 |> 
+  rename(año_id = sinim_year_code,
+         año = user_year,
+         variable_id = var_code,
+         variable_desc = description,
+         unidad = unit,
+         valor = value)
+  
 # guardar ----
-# datos_sinim |> readr::write_csv2("datos/sinim_2022_2023.csv")
-
-datos_sinim |> arrow::write_parquet("datos/sinim_2022_2023.parquet")
+datos_sinim_4 |> arrow::write_parquet("datos/sinim_2022_2023.parquet")
