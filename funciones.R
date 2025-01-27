@@ -47,7 +47,7 @@ sinim_obtener_variables <- function() {
   as_tibble(final)
 }
 
-sinim_obtener_municipios <- function(municipios, limit = 5000, region = "T") {
+sinim_obtener_municipio <- function(municipios, limit = 5000, region = "T") {
   if (missing(municipios) || length(municipios) < 1) {
     stop('Provide at least one municipality code or "T" for all.')
   }
@@ -80,7 +80,7 @@ sinim_obtener_municipios <- function(municipios, limit = 5000, region = "T") {
 }
 
 
-sinim_obtener_municipios_todos <- function(limit = 5000, region = "T") {
+sinim_obtener_municipios <- function(limit = 5000, region = "T") {
   # if (missing(municipios) || length(municipios) < 1) {
   #   stop('Provide at least one municipality code or "T" for all.')
   # }
@@ -182,7 +182,7 @@ sinim_obtener_datos <- function(
   var_codes_chr <- as.character(var_codes)
   sinim_codes   <- sinim_años(years)
   var_labels    <- sinim_obtener_variables()
-  muni_info     <- sinim_obtener_municipios(municipios, limit, region)
+  muni_info     <- sinim_obtener_municipio(municipios, limit, region)
   
   if (nrow(muni_info) == 0) {
     stop("No matching municipalities found. Check municipality codes or use 'T'.")
