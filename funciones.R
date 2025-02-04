@@ -2,7 +2,6 @@
 # código por Rony Rodrigo Maximiliano Rodriguez Ramirez
 # https://github.com/RRMaximiliano
 
-
 library(httr)
 library(jsonlite)
 library(tidyverse)
