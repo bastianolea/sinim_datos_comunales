@@ -14,7 +14,7 @@ El script `ejemplo_api.R` muestra cómo obtener datos, y puede modificarse para 
 `sinim_obtener_datos()` permite entregarle años, variables y municipios, y realiza la obtención de los datos. Pueden entregarse años, variables y municipios simultáneos, de modo que es posible extraer múltiples variables de múltiples municipios en una sola expresión.
 
 ### Datos
-En la carpeta `datos` se encuentra un archivo formato Arrow (`.parquet`) que contiene los datos de todas las variables, para todas las comunas, entre los años 2019 y 2023. También están disponibles en formato Excel y RDS (nativo de R). Encuentra los datos [en este enlace](https://github.com/bastianolea/sinim_datos_comunales/raw/main/datos/sinim_2019-2023.parquet).
+En la carpeta `datos` se encuentra un archivo [formato Arrow](https://arrow.apache.org/docs/r/articles/arrow.html#reading-and-writing-data) (`.parquet`) que contiene los datos de todas las variables, para todas las comunas, entre los años 2019 y 2023. También están disponibles en formato Excel y RDS (nativo de R). Encuentra los datos [en este enlace](https://github.com/bastianolea/sinim_datos_comunales/raw/main/datos/sinim_2019-2023.parquet).
 
 
 #### Variables disponibles
